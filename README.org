@@ -8,7 +8,7 @@ This is a fork of org-edna with modifications to better suit my use cases and wo
 
 *** Using Text-Based IDs (Non-UUID)
 
-Posted a bug: [[https://savannah.nongnu.org/bugs/?66825][Org Edna - Bugs: bug #66825, Fix using IDs that are not UUID [Savannah]​]].
+Posted a bug: [[https://savannah.nongnu.org/bugs/?66825][Org Edna - Bugs: bug #66825, Fix using IDs that are not UUID]].
 
 Org-edna typically works with UUIDs for IDs. However, when using text-based IDs, an error occurs because such IDs are treated as symbols rather than strings. For example:
 
