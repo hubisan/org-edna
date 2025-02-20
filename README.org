@@ -47,7 +47,7 @@ In this case, ~org-edna-finder/ids~ throws an error because ~string-prefix-p~ ca
 
 Make it possible to place a trigger on a heading that gets triggered if the state of another heading changes.
 
-This doesn't work becacuse changing the state of the heading with ID testme doesn't see this trigger:
+This doesn't work because changing the state of the heading with ID testme doesn't see this trigger:
 
 #+BEGIN_SRC org
   :TRIGGER: if ids(testme) done? then self done!(NEXT)
