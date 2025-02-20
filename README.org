@@ -22,24 +22,7 @@ Org-edna typically works with UUIDs for IDs. However, when using text-based IDs,
   :END:
 #+END_SRC
 
-In this case, ~org-edna-finder/ids~ throws an error because ~string-prefix-p~ cannot handle symbols properly. Instead of modifying ~org-edna--transform-arg~, I updated ~org-edna-finder/ids~ to always convert symbols to strings:
-
-#+BEGIN_SRC emacs-lisp
-  (defun org-edna-finder/ids (&rest ids)
-    "Find a list of headings with given IDS.
-
-  Edna Syntax: ids(ID1 ID2 ...)
-
-  Each ID represents the `:ID:` property of the targeted heading. The ID can be
-  prefixed with `id:' (e.g., id:testme) to represent an Org link.
-
-  In edna syntax, IDs don't need to be quoted."
-    (mapcar
-     (lambda (id)
-       (let ((id (if (symbolp id) (symbol-name id) id)))
-         (org-id-find (string-remove-prefix "id:" id) 'marker)))
-     ids))
-#+END_SRC
+In this case, ~org-edna-finder/ids~ throws an error because ~string-prefix-p~ cannot handle symbols properly. Instead of modifying ~org-edna--transform-arg~, I updated ~org-edna-finder/ids~ to always convert symbols and also numbers to strings.
 
 ** Planned Changes
 
