@@ -1,0 +1,82 @@
+#+STARTUP: showall
+
+* Org-edna
+
+This is a fork of org-edna with modifications to better suit my use cases and workflow.
+
+** Changes
+
+*** Using Text-Based IDs (Non-UUID)
+
+Org-edna typically works with UUIDs for IDs. However, when using text-based IDs, an error occurs because such IDs are treated as symbols rather than strings. For example:
+
+#+BEGIN_SRC org
+  ,* TODO The trigger
+  :PROPERTIES:
+  :TRIGGER:  ids(id:testme) done!(NEXT)
+  :END:
+
+  ,* Target heading with ID
+  :PROPERTIES:
+  :ID:       testme
+  :END:
+#+END_SRC
+
+In this case, ~org-edna-finder/ids~ throws an error because ~string-prefix-p~ cannot handle symbols properly. Instead of modifying ~org-edna--transform-arg~, I updated ~org-edna-finder/ids~ to always convert symbols to strings:
+
+#+BEGIN_SRC emacs-lisp
+  (defun org-edna-finder/ids (&rest ids)
+    "Find a list of headings with given IDS.
+
+  Edna Syntax: ids(ID1 ID2 ...)
+
+  Each ID represents the `:ID:` property of the targeted heading. The ID can be
+  prefixed with `id:' (e.g., id:testme) to represent an Org link.
+
+  In edna syntax, IDs don't need to be quoted."
+    (mapcar
+     (lambda (id)
+       (let ((id (if (symbolp id) (symbol-name id) id)))
+         (org-id-find (string-remove-prefix "id:" id) 'marker)))
+     ids))
+#+END_SRC
+
+** Planned Changes
+
+*** TODO Trigger referencing to another headings state change
+
+Make it possible to place a trigger on a heading that gets triggered if the state of another heading changes.
+
+This doesn't work becacuse changing the state of the heading with ID testme doesn't see this trigger:
+
+#+BEGIN_SRC org
+  :TRIGGER: if ids(testme) done? then self done!(NEXT)
+#+END_SRC
+
+Atm I am using this which is not so good, as I have to have a trigger and a blocker:
+
+#+BEGIN_SRC org
+  ,* TODO Requirement
+  :PROPERTIES:
+  :ID:       requirement
+  :TRIGGER:  ids(next1 next2 next3) todo!(NEXT)
+  :END:
+
+  ,* Next 1
+  :PROPERTIES:
+  :ID:       next1
+  :BLOCKER: ids(requirement)
+  :END:
+
+  ,* Next 2
+  :PROPERTIES:
+  :ID:       next2
+  :BLOCKER: ids(requirement)
+  :END:
+
+  ,* Next 3
+  :PROPERTIES:
+  :ID:       next3
+  :BLOCKER: ids(requirement)
+  :END:
+#+END_SRC

@@ -7,7 +7,7 @@
 ;; Keywords: convenience, text, org
 ;; URL: https://savannah.nongnu.org/projects/org-edna-el/
 ;; Package-Requires: ((emacs "25.1") (seq "2.19") (org "9.0.5"))
-;; Version: 1.1.2
+;; Version: 1.1.3
 
 ;; This file is part of GNU Emacs.
 
@@ -654,7 +654,6 @@ this after reverting Org mode buffers."
   (interactive)
   (setq org-edna--finder-cache (make-hash-table :test 'equal)))
 
-
 ;;; Interactive Functions
 
 (defun org-enda--should-run-in-from-state-p (from)
@@ -753,7 +752,6 @@ Remove Edna's workers from `org-trigger-hook' and
       (org-edna--load)
     (org-edna--unload)))
 
-
 ;;; Finders
 
 ;; Tag Finder
@@ -789,22 +787,19 @@ honoring any restriction (the equivalent of the nil SCOPE in
    match-spec scope skip))
 
 ;; ID finder
-(defun org-edna-finder/ids (&rest ids)
-  "Find a list of headings with given IDS.
+  (defun org-edna-finder/ids (&rest ids)
+    "Find a list of headings with given IDS.
 
-Edna Syntax: ids(ID1 ID2 ...)
+  Edna Syntax: ids(ID1 ID2 ...)
 
-Each ID is a UUID as understood by `org-id-find'.  Alternatively,
-ID may also be id:UUID, where UUID is a UUID as understood by
-`org-id-find'.
+  Each ID represents the `:ID:` property of the targeted heading. The ID can be
+  prefixed with `id:' (e.g., id:testme) to represent an Org link.
 
-Note that in the edna syntax, the IDs don't need to be quoted."
-  (mapcar
-   (lambda (id)
-     (if (string-prefix-p "id:" id)
-         (org-id-find (string-remove-prefix "id:" id) 'marker)
-       (org-id-find id 'marker)))
-   ids))
+  In edna syntax, IDs don't need to be quoted."
+    (mapcar
+     (lambda (id)
+       (org-id-find (string-remove-prefix "id:" (format "%s" id)) 'marker))
+     ids))
 
 (defun org-edna-finder/self ()
   "Finder for the current heading.
@@ -1384,7 +1379,6 @@ which ones will and won't work."
   (with-current-buffer (find-file-noselect (expand-file-name file org-directory))
     (list (point-min-marker))))
 
-
 ;;; Actions
 
 ;; Set TODO state
@@ -2060,7 +2054,6 @@ Does nothing if the source heading has no property PROPERTY."
   (when-let* ((old-prop (org-entry-get last-entry property)))
     (org-entry-put nil property old-prop)))
 
-
 ;;; Conditions
 
 ;; For most conditions, we return true if condition is true and neg is false, or
@@ -2195,7 +2188,6 @@ MATCH-STRING is a valid match string as passed to
     (when (org-xor condition neg)
       (org-get-heading))))
 
-
 ;;; Consideration
 
 (defun org-edna-handle-consideration (consideration blocks)
@@ -2261,7 +2253,6 @@ same as \"consider\"."
              first-block
            nil))))))
 
-
 ;;; Popout editing
 
 (defvar org-edna-edit-original-marker nil)
@@ -2505,7 +2496,6 @@ Displays help for KEYWORD in the Help buffer."
     (with-help-window (help-buffer)
       (princ doc))))
 
-
 ;;; Bug Reports
 
 (declare-function lm-report-bug "lisp-mnt" (topic))
